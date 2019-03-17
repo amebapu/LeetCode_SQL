@@ -1,0 +1,16 @@
+select b.Name as Department,
+a.name as Employee,
+a.Salary as Salary
+from Employee a
+join Department b on a.DepartmentId = b.Id
+where (b.name, a.salary) 
+in (select department.name, max(salary)
+from employee
+join department on departmentid = department.id
+group by departmentid)
+
+'''
+First to find out the maximum salary in each dept. so we can get the code in above sub-query first. 
+Then simply join our two lovely tables and match the department name and salary value with our combined tables 
+to get the final result
+'''
