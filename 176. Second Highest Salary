@@ -1,0 +1,22 @@
+'''
+Write a SQL query to get the second highest salary from the Employee table.
+if no second highest, return null
+
+'''
+select 
+ifnull(
+(select distinct salary
+from employee
+order by salary desc
+limit 1 offset 1), null)
+as SecondHighestSalary
+
+'''
+since we need to return null if no value, thus, IFNULL is a good function in MySQL to use.
+IFNULL(expression, alt_value)
+if the expression is not null, return expression
+if the expression is null, return the alt_value
+this is a good way to test null value in MySQL
+
+the main part of this question is very simple. Just reverse the order and select the second one using limit 1 offset 1.
+'''
