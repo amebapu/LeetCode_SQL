@@ -1,0 +1,11 @@
+select a.name as Employee
+from employee a join employee b
+on a.managerid = b.id
+where a.salary > b.salary
+
+'''
+this is the time we need to apply self join. when we face questions like this, requiring two value from same table
+to do some calculation or comparison, we should think about self join in the first place.
+when self join, watch out which column to use to be the foreign key. for this one, we need connect employee with their 
+managers.
+'''
