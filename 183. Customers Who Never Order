@@ -1,0 +1,19 @@
+Solution 1: IS NULL
+
+select name as Customers
+from customers
+left join orders on customers.id = orders.customerid
+where orders.id is null
+
+Solution 2: Sub Query
+
+select customers.name as Customers
+from customers
+where customers.id not in
+(select customerid from orders)
+
+'''
+my first thought is the solution one, using left join, then if customer has null value in orders.id,
+they are Customers Who Never Order. 
+the second solution is easy too, just found out those customer which are not in orders table using a subquery.
+'''
