@@ -1,0 +1,18 @@
+select b.id
+from weather a,
+weather b
+where TO_DAYS(b.RecordDate)-TO_DAYS(a.RecordDate)=1 and
+a.temperature < b.temperature
+
+'''
+we just need to join the table with date difference 1 and temperature previous lower. 
+one thing new here is the TO_DAYS() function, this function will return the date from year 0 to current date.
+thus we just need the difference equal to 1. 
+also, we can use datediff() function as well, it return the differnce between two dates, simpler
+'''
+
+select b.id
+from weather a,
+weather b
+where datediff(b.RecordDate, a.RecordDate) = 1 and
+a.temperature < b.temperature
