@@ -1,0 +1,14 @@
+Question: Select all employee's name and bonus whose bonus is < 1000.
+
+Answer:
+
+select name, bonus
+from employee e
+left join bonus b
+on e.empid = b.empid
+where bonus < 1000 or bonus is null
+
+'''
+easy question, but things to keep in mind is that when we use bonus < 1000, it will not contain NULL value. NULL value
+won't be used for comparison. Thus, we need to add bonus is null condition here.
+'''
