@@ -1,0 +1,19 @@
+Solution 1:
+select distinct a.email
+from Person a, Person b
+where a.email = b.email
+and a.id <> b.id
+
+'''
+self join and find out the email id when their emails are same but id are different. simple.
+'''
+
+Solution 2:
+select email
+from person
+group by email
+having count(id) > 1
+
+'''
+count the how many id per email has, and filter out the one <= 1
+'''
