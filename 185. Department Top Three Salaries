@@ -1,0 +1,14 @@
+select D.name as department, T.Name as employee, T.salary
+from
+(
+select departmentid, name, salary,
+  dense_rank() over (partition by deparmentid order by salary desc) as rank
+from employee
+) as T join department D
+on T.departmentid = D.id
+where T.rank <= 3
+
+'''
+using dense_rank() and partition to generate a rank number for each salary by department;
+then using join table to select the department name and set the where cluse to filter the rank <= 3
+'''
