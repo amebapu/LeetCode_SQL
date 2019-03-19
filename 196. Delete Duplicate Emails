@@ -1,3 +1,5 @@
+Solution 1:
+
 delete a 
 from person a, person b
 where a.email = b.email and a.id > b.id
@@ -5,3 +7,29 @@ where a.email = b.email and a.id > b.id
 '''
 same thing as select cluse, just change select to delete. and remember to delete the larger id one.
 '''
+
+
+Solution 2:
+
+Delete From Person
+Where Id not in (
+    Select minId From (
+        Select min(Id) AS minId, Email
+        From Person
+        Group by Email
+    ) AS tmp
+);
+
+'''
+instead of join, we use subquery here to get the larger id of duplicate email;
+one thing needs to be careful is when we are using subquery and updating table, the inner table may be changed while processing;
+the below code is a bad example. we need a copy of the table to keep the inner table from deleting by outter delete cluse.
+see above code.
+'''
+
+Delete From Person
+Where Id not in (  
+        Select min(Id)
+        From Person
+        Group by Email
+);
