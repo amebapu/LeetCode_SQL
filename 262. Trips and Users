@@ -1,0 +1,16 @@
+select request_at as 'Day',
+round(sum((case when status like 'cancelled%' then 1 else 0 end))/count(id), 2) as 'Cancellation Rate'
+from trips as t
+join users as u
+on t.client_id = u.users_id
+where banned = 'No'
+and request_at between '2013-10-01' and '2013-10-03'
+group by request_at
+
+'''
+the main question here we need to use case when to sum the total cancellation times, no matter it's
+from driver or user. thus like can be applied here. count(id) is the total rows of records we have, aka total population.
+round(xxxxx, 2) give only two decimal remaining. 
+always use '' to cover string, even thought some of them may be unnecessary, just to be 100% sure.
+do not forget group by whenever we have agg function.
+'''
