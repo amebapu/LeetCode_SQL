@@ -20,3 +20,17 @@ Your query should return the following result for the sample case above.
 Note:
 The seat_id is an auto increment int, and free is bool ('1' means free, and '0' means occupied.).
 Consecutive available seats are more than 2(inclusive) seats consecutively available.
+
+
+# Write your MySQL query statement below
+select distinct a.seat_id
+from cinema a join cinema b
+where abs(a.seat_id - b.seat_id) = 1
+and a.free = 1 and b.free = 1
+order by a.seat_id
+
+这个题一看就知道是要用self-join的，这里有个trick，就是我们self-join的时候，不写on这个条件(其实也可以写，有很多种做法，我们这里用暴力一点的）
+那么就代表是Cartesian product，也就是俩俩配对（生成table a 和table b），这里如果我们把cinema俩俩配对，那么1号座位就会
+分别匹配1,2,3,4,5号座位，
+然后我们要找到连续的座位，那么意味着a和b之间id差必须1，并且两个都必须是free的，用这个条件我们就能筛选出所有座位，
+但是如果一个座位前后都是连续的，这个座位会被计算两次，所以我们取一个distinct，就ok了
