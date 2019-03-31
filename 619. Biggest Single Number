@@ -1,0 +1,35 @@
+Table my_numbers contains many numbers in column num including duplicated ones.
+Can you write a SQL query to find the biggest number, which only appears once.
+
++---+
+|num|
++---+
+| 8 |
+| 8 |
+| 3 |
+| 3 |
+| 1 |
+| 4 |
+| 5 |
+| 6 | 
+For the sample data above, your query should return the following result:
++---+
+|num|
++---+
+| 6 |
+Note:
+If there is no such number, just output null.
+
+
+# Write your MySQL query statement below
+select max(num) as num
+from 
+(
+    select num
+    from my_numbers a
+    group by num
+    having count(*) = 1
+) as b
+
+就从理解题意的方向来解题，比如，我们首先要找到那些没有重复过的数字，那么就用group by 然后 count为1就行
+然后，找出其中这些数字里面最大值，所以用个subquery就可以了
