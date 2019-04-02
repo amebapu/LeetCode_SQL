@@ -1,0 +1,64 @@
+The Employee table holds all employees including their managers. Every employee has an Id, and there is also a column for the manager Id.
+
++------+----------+-----------+----------+
+|Id    |Name 	  |Department |ManagerId |
++------+----------+-----------+----------+
+|101   |John 	  |A 	      |null      |
+|102   |Dan 	  |A 	      |101       |
+|103   |James 	  |A 	      |101       |
+|104   |Amy 	  |A 	      |101       |
+|105   |Anne 	  |A 	      |101       |
+|106   |Ron 	  |B 	      |101       |
++------+----------+-----------+----------+
+Given the Employee table, write a SQL query that finds out managers with at least 5 direct report. For the above table, your SQL query should return:
+
++-------+
+| Name  |
++-------+
+| John  |
++-------+
+Note:
+No one would report to himself.
+
+Solution:
+第一个想法就是self join，但是只要涉及join一般速度都会慢，所以这题还有更快的办法
+
+
+# Write your MySQL query statement below
+
+select b.name
+from employee a
+join employee b
+on a.ManagerId = b.Id
+group by a.ManagerId
+having count(a.ManagerId) >= 5
+
+/*
+
+这是self join后的table，注意group by 可以对自己group by，然后再给自己上条件，比如这里我就用的是a的managerId group by，并且
+having也是这个col；所以其实做到这里已经发现，我们的self join好像可有可无，因为其实不join也完全可以做到，我们只需要
+对managerid做group by，然后返回name就好了，看下面的Solution
+  id	name	ManagerId	id	name	ManagerId
+1	102	Dan	  101	      101	John	NULL
+2	103	James	101	      101	John	NULL
+3	104	John	101	      101	John	NULL
+4	105	Amy	  101	      101	John	NULL
+5	106	Alex	101	      101	John	NULL
+6	107	Apple	102	      102	Dan	  101
+7	108	Amy	  102	      102	Dan	  101
+8	109	Bob	  102	      102	Dan	  101
+9	110	Tony	102	      102	Dan	  101
+
+*/
+
+select name
+from employee
+where id in
+(
+    select ManagerId
+    from employee
+    group by ManagerId
+    having count(ManagerId) >= 5
+)
+
+这个query的速度比之前的基本快了一倍
