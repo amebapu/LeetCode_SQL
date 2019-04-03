@@ -1,0 +1,53 @@
+Table: Candidate
+
++-----+---------+
+| id  | Name    |
++-----+---------+
+| 1   | A       |
+| 2   | B       |
+| 3   | C       |
+| 4   | D       |
+| 5   | E       |
++-----+---------+  
+Table: Vote
+
++-----+--------------+
+| id  | CandidateId  |
++-----+--------------+
+| 1   |     2        |
+| 2   |     4        |
+| 3   |     3        |
+| 4   |     2        |
+| 5   |     5        |
++-----+--------------+
+id is the auto-increment primary key,
+CandidateId is the id appeared in Candidate table.
+Write a sql to find the name of the winning candidate, the above example will return the winner B.
+
++------+
+| Name |
++------+
+| B    |
++------+
+Notes:
+
+You may assume there is no tie, in other words there will be at most one winning candidate.
+ 
+ 
+ 
+ 这道题其实就是统计一堆参选人的得票结果，最后找到获胜的那个人，刚开始我用的是coalesce()，因为有两个testcase很奇葩，分别是没有人投票和没有人参选
+ （但是那些sb还投了票），但是最后return空的时候我的empty string和LeetCode要求的不一样，所以还是换成另外一个解法比较方便；
+ 下面这个解法，就不用考虑corner case，也就是在subquery里面select，如果有就有，没有就返回空；
+ 
+ # Write your MySQL query statement below
+select name
+from candidate
+where id =
+(
+    select candidateid 
+    from vote
+    group by candidateid
+    order by count(candidateid) desc
+    limit 1
+)
+
