@@ -1,0 +1,73 @@
+Get the highest answer rate question from a table survey_log with these columns: uid, action, question_id, answer_id, q_num, timestamp.
+
+uid means user id; action has these kind of values: "show", "answer", "skip"; answer_id is not null when action column is "answer", while is null for "show" and "skip"; q_num is the numeral order of the question in current session.
+
+Write a sql query to identify the question which has the highest answer rate.
+
+Example:
+
+Input:
++------+-----------+--------------+------------+-----------+------------+
+| uid  | action    | question_id  | answer_id  | q_num     | timestamp  |
++------+-----------+--------------+------------+-----------+------------+
+| 5    | show      | 285          | null       | 1         | 123        |
+| 5    | answer    | 285          | 124124     | 1         | 124        |
+| 5    | show      | 369          | null       | 2         | 125        |
+| 5    | skip      | 369          | null       | 2         | 126        |
++------+-----------+--------------+------------+-----------+------------+
+Output:
++-------------+
+| survey_log  |
++-------------+
+|    285      |
++-------------+
+Explanation:
+question 285 has answer rate 1/1, while question 369 has 0/1 answer rate, so output 285.
+ 
+
+Note: The highest answer rate meaning is: answer number's ratio in show number in the same question.
+
+
+
+Solution:
+
+这道题有点无聊其实，虽然知道他想找到最多回答的那个问题，但是直接找回答数最多的不就完了，非要去求一个rate，明明问题只有可能一个
+
+# Write your MySQL query statement below
+select question_id as 'survey_log'
+from survey_log
+group by question_id
+order by count(answer_id) / count(if(action = 'show', 1, null)) desc
+limit 1
+
+这个思路是answer_id直接就能代表有多少个answer，而show的次数需要用到if来判断，因为action这个col有三个类型，只有当出现show的时候才count
+没有show的时候就是null，或者用0都可以，这样就能知道出现几次show
+
+还有一个比较传统的做法，就是用case when，把当show的时候sum求出来，当answer时候的sum求出来，再最后相除：
+
+# Write your MySQL query statement below
+select question_id as survey_log
+from
+(
+    select question_id,
+    sum(case when action = 'show' then 1 else null end) as num_show,
+    sum(case when action = 'answer' then 1 else null end) as num_answer
+    from survey_log
+    group by question_id
+) as t1
+order by (num_answer/num_show) desc
+limit 1
+
+
+这里有个有意思的问题，终于解决了我长久以来的一个疑惑，主要是一直忘了查询：
+就是count和sum的区别到底在哪？
+
+看上面的例子，如果action等于show，就是1，不等于就是null，那么最后的总和是多少，就代表了有多少次1，就是有多少次show，符合逻辑
+那我们可不可以用count呢？ 用了count就是说，每次出现一个数字（不管数字是多少，1,0,999），我们就count一次，最后一共count了多少次，就多少个show；
+看起来没有区别对吗？
+实际上我上面的code可以用count来替换sum，最主要的原因，是因为我else用的是null（或者不写else，直接end，默认是null）
+count会把任何出现的valid的数字都计数，除了null，所以这里我们可以sum和count互换，但是如果我们把null改成0，那就不行了
+因为count还是会把0的情况count + 1，这样就没有意义了，每次不管等不等于show，都会被+1；
+所以总结下来，count和sum在某些情况可以互换，只要条件设置准确，不过需要明白他们之间真正的意义区别，
+sum是数学上面的加法，1就是1,0就是0，最后把他们都加在一起
+而count不是，是计算机意义上面的加法，有数字就是1，没有数字，比如null就是0，最后加在一起；
